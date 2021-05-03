@@ -1,38 +1,101 @@
 .App {
-  text-align: center;
+  width: 100%;
+  height: 100vh;
+  margin: auto;
 }
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  text-align: center;
+  color: white;
+  padding: 1rem;
+  background-color: rgb(14, 168, 14);
+}
+
+.parking {
+  object-position: center;
+  width: 100%;
+}
+.parking img {
+  width: 100%;
+  object-fit: contain;
+}
+
+/* .parking-button {
+  outline: none;
+  border: none;
+  padding: 1px 5px;
   color: white;
 }
+.parking-button.primary {
+  background-color: green;
+}
+.parking-button.secondary {
+  background-color: red;
+} */
+/* .MuiButtonBase-root {
+  width: 20% !important;
+  height: 130px !important;
+} */
 
-.App-link {
-  color: #61dafb;
+.MuiButton-containedPrimary {
+  background-color: green !important;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.MuiButtonBase-root {
+  margin: 1rem !important;
+  width: 25% !important;
+}
+@media (min-width: 740px) {
+  .MuiButtonBase-root {
+    width: 110px !important;
   }
-  to {
-    transform: rotate(360deg);
-  }
+}
+.parking-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  justify-content: space-evenly;
+  box-sizing: border-box;
+}
+.parking-button {
+  margin: 5px 1px !important;
+  max-width: 25% !important;
+}
+.login-buttons {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+}
+.login-buttons button {
+  background-color: white;
+}
+.login-buttons img {
+  width: 80%;
+}
+button.login-provider-button {
+  border: none;
+}
+
+span.MuiButton-label {
+  font-size: 0.6rem;
+}
+.modalButtons {
+  display: flex;
+}
+.modal-body {
+  text-align: right;
+}
+.userDisplay {
+  text-align: center;
+  font-size: 1.3rem;
+}
+.date {
+  margin-top: -1rem;
+}
+.user {
+  padding-top: 0.8rem;
+}
+.modal-title.h4 {
+  text-align: right;
 }
