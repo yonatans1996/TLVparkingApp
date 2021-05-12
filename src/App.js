@@ -78,9 +78,15 @@ function App() {
               // });
               //setParked(false);
             }
+            let now = new Date();
+            let time = now.getTime();
+            let expireTime = time + 1000 * 36000;
+            now.setTime(expireTime);
             setUser(res.user.displayName);
             setUserId(res.user.uid);
             setPhone(phone);
+            localStorage.setItem("uid", res.user.uid);
+            localStorage.setItem("username", res.user.displayName);
           });
         })
         .catch((error) => {
@@ -90,24 +96,19 @@ function App() {
   };
 
   useEffect(() => {
-    // if (auth.currentUser) {
-    //   console.log("We remember this user");
-    //   setUser(auth.currentUser.displayName);
-    //   setUserId(auth.currentUser.uid);
-    //   setPhone(auth.currentUser.phone);
-    //   const docRef = storage.collection("users").doc(auth.currentUser.uid);
-    //   docRef.get().then((doc) => {
-    //     if (doc.exists) setParked(doc.data().parked);
-    //   });
-    // }
-    // async function fetchButtons() {
-    //   const res = await axios
-    //     .get(
-    //       "https://europe-west1-parkingtlv103.cloudfunctions.net/api/buttons"
-    //     )
-    //     .catch((e) => console.log(e));
-    // }
-    //fetchButtons();
+    if (localStorage.getItem("uid") && localStorage.getItem("username")) {
+      setUserId(localStorage.getItem("uid"));
+      setUser(localStorage.getItem("username"));
+      console.log("User already signed in");
+    }
+    async function getDate() {
+      const date = await axios.get(
+        "https://europe-west1-parkingtlv103.cloudfunctions.net/api/expired"
+      );
+      console.log(date.data);
+    }
+    getDate();
+
     storage
       .collection("parkings")
       .orderBy("number", "asc")
@@ -143,7 +144,6 @@ function App() {
       auth.signOut();
       return;
     }
-    console.log(parked);
     if (res.color === "primary") {
       if (parked) {
         setAlreadyParking(true);
@@ -210,7 +210,17 @@ function App() {
             <img src={google} alt="google icon" />
           </button>
         ) : (
-          <h2 className="userDisplay">שלום {user}</h2>
+          <h2
+            className="userDisplay"
+            style={{
+              padding: "1rem",
+              marginTop: 10,
+              border: "1px solid black",
+              backgroundColor: "rgb(95, 228, 95)",
+            }}
+          >
+            שלום {user}
+          </h2>
         )}
       </div>
       <div className="parking-buttons">

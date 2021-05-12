@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "מציאת חניה",
+  "name": "דרך פשוטה למצוא חניה",
   "icons": [
     {
       "src": "favicon.ico",

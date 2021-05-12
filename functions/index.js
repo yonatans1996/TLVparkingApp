@@ -1,6 +1,7 @@
 const functions = require("firebase-functions");
 const express = require("express");
 const firebase = require("firebase-admin");
+const axios = require("axios");
 const cors = require("cors");
 const firebaseConfig = {
   apiKey: "AIzaSyAM5kUWITztlOqJ7t8_zupos5-Adh6PypE",
@@ -73,16 +74,16 @@ app.post("/setparking", async (req, res) => {
   let parked;
   if (req.body.color == "primary") parked = false;
   else parked = true;
-  console.log(req.query, req.body);
-  console.log(parked);
-  db.collection("users")
-    .doc(req.query.userId)
-    .update({ parked: parked })
-    .catch((e) => console.log(e));
   const parking = await db
     .collection("parkings")
     .doc(req.query.parkingNumber)
     .set(req.body)
+    .then(() => {
+      db.collection("users")
+        .doc(req.query.userId)
+        .update({ parked: parked })
+        .catch((e) => res.send(e));
+    })
     .catch((e) => res.send(e));
   res.send("parking updated success");
 });
@@ -112,6 +113,87 @@ app.get("/userparkstatus", async (req, res) => {
   }
   console.log(user);
   res.send(user.parked === true);
+});
+app.get("/expired", async (req, res) => {
+  const table = {
+    "01": 0,
+    "02": 1,
+    "03": 2,
+    "04": 3,
+    "05": 4,
+    "06": 5,
+    "07": 6,
+    "08": 7,
+    "09": 8,
+    10: 9,
+    11: 10,
+    12: 11,
+  };
+  const hours = {
+    "00": 0,
+    "01": 1,
+    "02": 2,
+    "03": 3,
+    "04": 4,
+    "05": 5,
+    "06": 6,
+    "07": 7,
+    "08": 8,
+    "09": 9,
+    10: 10,
+    11: 11,
+    12: 12,
+    13: 13,
+    14: 14,
+    15: 15,
+    16: 16,
+    17: 17,
+    18: 18,
+    19: 19,
+    20: 20,
+    21: 21,
+    22: 22,
+    23: 23,
+  };
+  Date.prototype.addHours = function (h) {
+    this.setHours(this.getHours() + h);
+    return this;
+  };
+
+  const currentDate = new Date();
+
+  db.collection("parkings")
+    .get()
+    .then((querySnapshot) => {
+      querySnapshot.docs.forEach((doc) => {
+        const park = doc.data();
+        if (park.date) {
+          const parkString = park.date.split("-");
+          const timeString = park.time.split(":");
+          const parkDate = new Date(
+            parkString[0],
+            table[parkString[1]],
+            parkString[2],
+            hours[timeString[0]],
+            timeString[1]
+          );
+          const temp = [parkDate, currentDate];
+          res.send(JSON.stringify(temp));
+          return;
+          // if (parkDate < currentDate) {
+          //   db.collection("parkings").doc(`${park.number}`).update({
+          //     time: "",
+          //     date: "",
+          //     color: "primary",
+          //     user: "",
+          //     userId: "",
+          //   });
+          //   db.collection("users").doc(park.userId).update({ parked: false });
+          // }
+        }
+      });
+    });
+  res.send("ok");
 });
 
 exports.api = functions.region("europe-west1").https.onRequest(app);
