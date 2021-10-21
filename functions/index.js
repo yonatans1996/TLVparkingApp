@@ -1,30 +1,21 @@
+import secret from "../src/secret";
 const functions = require("firebase-functions");
 const express = require("express");
 const firebase = require("firebase-admin");
 const axios = require("axios");
 const cors = require("cors");
 const firebaseConfig = {
-  apiKey: "AIzaSyAM5kUWITztlOqJ7t8_zupos5-Adh6PypE",
-  authDomain: "parkingtlv103.firebaseapp.com",
-  projectId: "parkingtlv103",
-  storageBucket: "parkingtlv103.appspot.com",
-  messagingSenderId: "450372316952",
-  appId: "1:450372316952:web:8169ea8d94dd7fae98f86d",
+  apiKey: secret.API_KEY,
+  authDomain: secret.AUTH_DOMAIN,
+  projectId: secret.PROJECT_ID,
+  storageBucket: secret.STORAGE_BUCKET,
+  messagingSenderId: secret.MESSAGING_SENDER_ID,
+  appId: secret.APPID,
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const app = express();
 app.use(cors());
-// const firebase = require("firebase");
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//   functions.logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
-
-//Return array of all parking buttons
 app.get("/buttons", (req, res) => {
   db.collection("parkings")
     .orderBy("number")
