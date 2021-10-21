@@ -27,16 +27,6 @@ function WhatsAppPop({ setShow, number, show }) {
   };
   useEffect(() => {
     const getPersonInfo = async () => {
-      // const personId = await storage
-      //   .collection("parkings")
-      //   .doc(number)
-      //   .get()
-      //   .then((res) => res.data().userId);
-      // let parkingData = await storage
-      //   .collection("users")
-      //   .doc(personId)
-      //   .get()
-      //   .then((res) => res.data());
       const parkingData = await axios
         .get(
           "https://europe-west1-parkingtlv103.cloudfunctions.net/api/parkinguser",
@@ -60,6 +50,18 @@ function WhatsAppPop({ setShow, number, show }) {
     getParkingInfo();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  function kickUser() {
+    axios
+      .get(
+        "https://europe-west1-parkingtlv103.cloudfunctions.net/api/kickUser",
+        {
+          params: {
+            parkingNumber: number,
+          },
+        }
+      )
+      .catch((e) => alert(e));
+  }
 
   return (
     <>
@@ -84,6 +86,9 @@ function WhatsAppPop({ setShow, number, show }) {
             </Button>
             <Button color="primary" variant="contained" onClick={handleCall}>
               חייג
+            </Button>
+            <Button color="secondary" variant="contained" onClick={kickUser}>
+              הוצא את {parkingInfo.user} מהחניה
             </Button>
             <Button color="secondary" variant="contained" onClick={handleClose}>
               סגור

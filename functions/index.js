@@ -38,13 +38,88 @@ app.get("/buttons", (req, res) => {
     });
 });
 
-//Signup new user to DB
-app.post("/signup", (req, res) => {
-  db.collection("users")
-    .doc(req.body.id)
-    .set(req.body)
-    .then((sucsess) => res.status(200).send(sucsess))
+app.post("/addPhone", async (req, res) => {
+  if (
+    !req.body.phone ||
+    req.body.phone.match(/^[0-9]+$/) == null ||
+    req.body.phone.length !== 10
+  ) {
+    res.send("מספר  טלפון לא חוקי (10 ספרות)");
+    return;
+  }
+  let levelResult = await db
+    .collection("users")
+    .doc(req.body.userId)
+    .get()
+    .then((res) => res.data())
     .catch((e) => res.send(e));
+  let result = levelResult.level ? levelResult.level : 0;
+
+  let phoneRes = await db
+    .collection("phones")
+    .doc(req.body.phone)
+    .get()
+    .then((res) => res.data())
+    .catch((e) => console.log(e));
+
+  if (result < 64 || phoneRes !== undefined) {
+    if (result < 64) res.send("Permission denied. Level 64+");
+    else res.send("Phone is alreay in the system");
+    return;
+  }
+  db.collection("phones").doc(req.body.phone).set({ valid: true });
+  res.send("מספר טלפון נוסף בהצלה");
+});
+
+//Signup new user to DB
+app.post("/signup", async (req, res) => {
+  // const allowedNumbers = [
+  //   "0547972636",
+  //   "0526944962",
+  //   "0543307242",
+  //   "0528662884",
+  //   "0502333169",
+  //   "0506460239",
+  //   "0506560800",
+  //   "0506929002",
+  //   "0509271194",
+  //   "0523296111",
+  //   "0524262293",
+  //   "0526526292",
+  //   "0528134576",
+  //   "0528617272",
+  //   "0542170071",
+  //   "0542322440",
+  //   "0544240915",
+  //   "0544413393",
+  //   "0544423203",
+  //   "0544922819",
+  //   "0544977879",
+  //   "0545585912",
+  //   "0546000713",
+  //   "0546619965",
+  //   "0547910818",
+  //   "0587237236",
+  //   "0503221113",
+  // ];
+
+  let phoneRes = await db
+    .collection("phones")
+    .doc(req.body.phone)
+    .get()
+    .then((res) => res.data())
+    .catch((e) => console.log(e));
+  console.log(phoneRes);
+  if (phoneRes !== undefined && phoneRes.valid) {
+    db.collection("phones").doc(req.body.phone).set({ valid: false });
+    db.collection("users")
+      .doc(req.body.id)
+      .set(req.body)
+      .then((sucsess) => res.status(200).send(sucsess))
+      .catch((e) => res.send(e));
+  } else {
+    res.status(400).send("מספר הפלאפון לא נמצא במערכת");
+  }
 });
 app.get("/parkinguser", async (req, res) => {
   const personId = await db
@@ -70,22 +145,25 @@ app.get("/updateuserpark", async (req, res) => {
   res.send("update user success");
 });
 
+app.get("/kickUser", (req, res) => {
+  const emptyParking = {
+    color: "primary",
+    date: "",
+    time: "",
+    user: "",
+    userId: "",
+  };
+  db.collection("parkings").doc(req.query.parkingNumber).update(emptyParking);
+  res.send("success kick");
+});
+
 app.post("/setparking", async (req, res) => {
-  let parked;
-  if (req.body.color == "primary") parked = false;
-  else parked = true;
   const parking = await db
     .collection("parkings")
     .doc(req.query.parkingNumber)
     .set(req.body)
-    .then(() => {
-      db.collection("users")
-        .doc(req.query.userId)
-        .update({ parked: parked })
-        .catch((e) => res.send(e));
-    })
     .catch((e) => res.send(e));
-  res.send("parking updated success");
+  res.send("parking updated successfuly");
 });
 
 app.post("/updateparktime", async (req, res) => {
@@ -113,6 +191,16 @@ app.get("/userparkstatus", async (req, res) => {
   }
   console.log(user);
   res.send(user.parked === true);
+});
+app.get("/level", async (req, res) => {
+  let levelResult = await db
+    .collection("users")
+    .doc(req.query.userId)
+    .get()
+    .then((res) => res.data())
+    .catch((e) => res.send(e));
+  let result = levelResult.level ? levelResult.level : 0;
+  res.send(`${result}`);
 });
 app.get("/expired", async (req, res) => {
   const table = {
@@ -156,12 +244,11 @@ app.get("/expired", async (req, res) => {
     23: 23,
   };
   Date.prototype.addHours = function (h) {
-    this.setHours(this.getHours() + h);
+    this.setTime(this.getTime() + h * 60 * 60 * 1000);
     return this;
   };
-
   const currentDate = new Date();
-
+  currentDate.addHours(3);
   db.collection("parkings")
     .get()
     .then((querySnapshot) => {
@@ -177,19 +264,20 @@ app.get("/expired", async (req, res) => {
             hours[timeString[0]],
             timeString[1]
           );
-          const temp = [parkDate, currentDate];
-          res.send(JSON.stringify(temp));
-          return;
-          // if (parkDate < currentDate) {
-          //   db.collection("parkings").doc(`${park.number}`).update({
-          //     time: "",
-          //     date: "",
-          //     color: "primary",
-          //     user: "",
-          //     userId: "",
-          //   });
-          //   db.collection("users").doc(park.userId).update({ parked: false });
-          // }
+          if (parkDate < currentDate) {
+            db.collection("users")
+              .doc(`${park.userId}`)
+              .update({ level: firebase.firestore.FieldValue.increment(1) })
+              .catch((e) => res.send(e));
+
+            db.collection("parkings").doc(`${park.number}`).update({
+              time: "",
+              date: "",
+              color: "primary",
+              user: "",
+              userId: "",
+            });
+          }
         }
       });
     });

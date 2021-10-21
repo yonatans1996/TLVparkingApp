@@ -7,7 +7,7 @@ function SignInPopUp({ setSignPop, signPop }) {
     <>
       <Modal show={signPop} onHide={handleClose}>
         <Modal.Header>
-          <Modal.Title>יש צורך בהתחברות לפני</Modal.Title>
+          <Modal.Title>פעולה זאת מותרת למשתמשים רשומים בלבד</Modal.Title>
         </Modal.Header>
         <Modal.Footer>
           <Button color="secondary" variant="contained" onClick={handleClose}>

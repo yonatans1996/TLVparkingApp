@@ -1,43 +1,72 @@
 .App {
   width: 100%;
-  height: 100vh;
   margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 400px;
 }
 .App-header {
   text-align: center;
-  color: white;
+  width: 100%;
+  color: black;
   padding: 0.5rem;
-  background-color: rgb(14, 168, 14);
+  background: rgb(93, 160, 93);
+  background: linear-gradient(
+    90deg,
+    rgba(93, 160, 93, 1) 0%,
+    rgba(255, 255, 255, 1) 50%,
+    rgba(93, 160, 93, 1) 100%
+  );
 }
 
 .parking {
   object-position: center;
+  position: relative;
   width: 100%;
 }
 .parking img {
   width: 100%;
   object-fit: contain;
 }
-
-/* .parking-button {
-  outline: none;
-  border: none;
-  padding: 1px 5px;
+#credit {
+  text-align: center;
+  font-weight: 600;
+  color: black;
+}
+#credit a {
+  color: green;
+}
+#logout {
+  text-align: center;
+  cursor: pointer;
+  font-weight: 500;
+  text-decoration: underline;
+  margin: 10px 0px;
+}
+#load:disabled {
+  background-color: #007bff;
+}
+#load span {
   color: white;
+  font-size: 1.5rem !important;
 }
-.parking-button.primary {
-  background-color: green;
+#load {
+  width: 50% !important;
+  max-width: 400px;
 }
-.parking-button.secondary {
-  background-color: red;
-} */
-/* .MuiButtonBase-root {
-  width: 20% !important;
-  height: 130px !important;
-} */
 
 .MuiButton-containedPrimary {
-  background-color: green !important;
+  background-color: rgb(28, 83, 28) !important;
+}
+.MuiButton-containedPrimary:hover {
+  background-color: rgb(8, 97, 8) !important;
+}
+.MuiButton-containedSecondary {
+  background-color: rgb(179, 19, 19) !important;
+}
+.MuiButton-containedSecondary:hover {
+  background-color: rgb(151, 18, 18) !important;
 }
 
 .MuiButtonBase-root {
@@ -55,6 +84,7 @@
   align-items: stretch;
   justify-content: space-evenly;
   box-sizing: border-box;
+  width: 100%;
 }
 .parking-button {
   margin: 5px 1px !important;
@@ -81,7 +111,14 @@ span.MuiButton-label {
   font-size: 0.6rem;
 }
 .modalButtons {
+  width: 100%;
+  padding: 0;
   display: flex;
+  flex-wrap: wrap;
+}
+.modalButtons button {
+  width: 50 !important;
+  min-height: 80px;
 }
 .modal-body {
   text-align: right;
@@ -89,6 +126,15 @@ span.MuiButton-label {
 .userDisplay {
   text-align: center;
   font-size: 1.3rem;
+  border-radius: 15px;
+  padding: 1rem;
+  border: 1px solid black;
+  background-color: rgb(93, 160, 93);
+  margin-top: 10px;
+}
+.userDisplay a {
+  font-size: 1rem;
+  color: white;
 }
 .date {
   margin-top: -1rem;
@@ -98,4 +144,63 @@ span.MuiButton-label {
 }
 .modal-title.h4 {
   text-align: right;
+}
+.levelBar {
+  position: absolute;
+  bottom: 0;
+  text-align: center;
+  object-fit: center;
+  align-items: center;
+  object-fit: center;
+  width: 100%;
+  color: white;
+  font-weight: 600;
+  z-index: 3;
+}
+.levelBar img {
+  width: 30px;
+}
+.adminUsers {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+.adminUsers button {
+  background-color: orange;
+  border: 2px solid green;
+  padding: 5px;
+  font-weight: 400;
+  margin: 5px;
+  min-width: 160px;
+}
+.adminUsers button:disabled {
+  background-color: gray;
+  color: white;
+}
+
+.btn-info {
+  color: #fff;
+  background-color: #17a2b8;
+  border-color: #17a2b8;
+}
+.btn {
+  display: inline-block;
+  font-weight: 400;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  border: 1px solid transparent;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: 0.25rem;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
