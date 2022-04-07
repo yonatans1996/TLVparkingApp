@@ -1,16 +1,15 @@
-import secret from "../src/secret";
 const functions = require("firebase-functions");
 const express = require("express");
 const firebase = require("firebase-admin");
 const axios = require("axios");
 const cors = require("cors");
 const firebaseConfig = {
-  apiKey: secret.API_KEY,
-  authDomain: secret.AUTH_DOMAIN,
-  projectId: secret.PROJECT_ID,
-  storageBucket: secret.STORAGE_BUCKET,
-  messagingSenderId: secret.MESSAGING_SENDER_ID,
-  appId: secret.APPID,
+  apiKey: functions.config().credentials.api_key,
+  authDomain: functions.config().credentials.auth_domain,
+  projectId: functions.config().credentials.project_id,
+  storageBucket: functions.config().credentials.storage_bucket,
+  messagingSenderId: functions.config().credentials.messaging_sender_id,
+  appId: functions.config().credentials.appid,
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
@@ -209,7 +208,12 @@ app.get("/expired", async (req, res) => {
     return this;
   };
   const currentDate = new Date();
-  currentDate.addHours(3);
+  if (currentDate.getMonth() >= 3 && currentDate.getMonth() <= 10) {
+    currentDate.addHours(3);
+  } else {
+    currentDate.addHours(2);
+  }
+
   db.collection("parkings")
     .get()
     .then((querySnapshot) => {
